@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import validator from "validator";
 
 const userSchema = new Schema({
     username : {
@@ -17,6 +18,11 @@ const userSchema = new Schema({
         unique: true,
         lowercase: true,
         trim: true,
+        validator(value){
+            if(!validator.isEmail(value)){
+                throw new Error("Enter Valid Email")
+            }
+        }
     },
     password: {
         type: String,
@@ -44,7 +50,7 @@ const userSchema = new Schema({
     refreshToken: {
         type: String,
     }
-})
+}, {timestamps: true})
 
 userSchema.pre("save", async function(next) {
     if(!this.isModified("password")) return next();
